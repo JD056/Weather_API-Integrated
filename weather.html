@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherVision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1><i class="fas fa-sun"></i> WeatherVision</h1>
+            <p class="tagline">See your weather in style</p>
+        </header>
+
+        <div class="search-container">
+            <form method="POST" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="city" placeholder="Enter city name..." value="{{ city }}" required>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if weather %}
+        <main class="weather-display">
+            <div class="weather-card">
+                <div class="location-info">
+                    <h2>{{ city }}</h2>
+                    <p class="current-date" id="current-date"></p>
+                </div>
+
+                <div class="weather-main">
+                    <div class="temperature-section">
+                        <span class="temperature">{{ weather.main.temp|round(1) }}</span>
+                        <span class="degree">°C</span>
+                    </div>
+                    <div class="weather-icon">
+                        <img src="http://openweathermap.org/img/wn/{{ weather.weather[0].icon }}@4x.png"
+                             alt="{{ weather.weather[0].description }}">
+                        <p>{{ weather.weather[0].description|title }}</p>
+                    </div>
+                </div>
+
+                <div class="weather-details">
+                    <div class="detail-card feels-like">
+                        <i class="fas fa-temperature-low"></i>
+                        <div>
+                            <span>Feels Like</span>
+                            <p>{{ weather.main.feels_like|round(1) }}°C</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-card humidity">
+                        <i class="fas fa-tint"></i>
+                        <div>
+                            <span>Humidity</span>
+                            <p>{{ weather.main.humidity }}%</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-card wind">
+                        <i class="fas fa-wind"></i>
+                        <div>
+                            <span>Wind</span>
+                            <p>{{ weather.wind.speed }} m/s</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        {% elif weather is none and request.method == 'POST' %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>Couldn't find weather data for "{{ city }}"</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add current date
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+    </script>
+</body>
+</html>
